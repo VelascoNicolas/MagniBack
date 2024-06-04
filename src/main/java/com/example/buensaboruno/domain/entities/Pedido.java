@@ -91,4 +91,33 @@ public class Pedido extends Base{
         }
         this.setTotalCosto(precioCosto);
     }
+
+    public void calcularTiempoEstimadoFinalizacion(LocalTime horaActual) {
+        LocalTime hora = horaActual;
+        Integer maximo = 0;
+        for (DetallePedido dp : detallePedidos) {
+            if(dp.getArticulo() instanceof ArticuloManufacturado) {
+                if (((ArticuloManufacturado) dp.getArticulo()).getTiempoEstimadoMinutos() > maximo) {
+                    maximo = ((ArticuloManufacturado) dp.getArticulo()).getTiempoEstimadoMinutos();
+                }
+            }
+            if (dp.getPromocion() != null) {
+                for (PromocionDetalle promocionDetalle : dp.getPromocion().getPromocionDetalles()) {
+                    if (promocionDetalle.getArticulo() instanceof ArticuloManufacturado) {
+                        if (((ArticuloManufacturado) promocionDetalle.getArticulo()).getTiempoEstimadoMinutos() > maximo) {
+                            maximo = ((ArticuloManufacturado) promocionDetalle.getArticulo()).getTiempoEstimadoMinutos();
+                        }
+                    }
+                }
+            }
+        }
+
+        hora = hora.plusMinutes(maximo);
+        this.setHoraEstimadaFinalizacion(hora);
+    }
+
+    public void setFechasPedido(LocalDate fechaActual) {
+        this.setFechaPedido(fechaActual);
+        this.getFactura().setFechaFacturacion(fechaActual);
+    }
 }

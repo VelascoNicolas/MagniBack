@@ -1,5 +1,6 @@
 package com.example.buensaboruno.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,7 +16,6 @@ import java.util.Set;
 @Getter
 @ToString
 @SuperBuilder
-//@Audited
 public class ArticuloInsumo extends Articulo{
     private Double precioCompra;
     private Integer stockActual;

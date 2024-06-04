@@ -1,13 +1,14 @@
 package com.example.buensaboruno.repositories;
 
 import com.example.buensaboruno.domain.entities.ArticuloInsumo;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ArticuloInsumoRepository extends BaseRepository<ArticuloInsumo,Long> {
+public interface ArticuloInsumoRepository extends JpaRepository<ArticuloInsumo,Long> {
     @Query(value = "SELECT ARTICULO_INSUMO.ID, *\n" +
             "FROM ARTICULO_INSUMO\n" +
             "INNER JOIN ARTICULO\n" +

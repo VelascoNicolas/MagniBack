@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
 @Repository
-public interface ArticuloRepository  extends BaseRepository<Articulo, Long> {
+public interface ArticuloRepository  extends JpaRepository<Articulo, Long> {
 }

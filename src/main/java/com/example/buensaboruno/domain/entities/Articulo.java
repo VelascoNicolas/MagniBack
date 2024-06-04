@@ -1,11 +1,10 @@
 package com.example.buensaboruno.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.NotAudited;
 
 import java.io.Serializable;
@@ -13,16 +12,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
 @Setter
 @SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
-//@Audited
-public abstract class Articulo  extends Base {
+public abstract class Articulo implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
+    protected boolean eliminado;
     protected String denominacion;
     protected Double precioVenta;
 
@@ -40,4 +41,7 @@ public abstract class Articulo  extends Base {
 
     @ManyToOne
     protected Categoria categoria;
+
+    public Articulo() {
+    }
 }
