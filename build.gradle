@@ -7,6 +7,7 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+
 java {
 	sourceCompatibility = '17'
 }
@@ -20,7 +21,6 @@ configurations {
 repositories {
 	mavenCentral()
 }
-
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -60,11 +60,16 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+jar {
+	manifest {
+		attributes 'BuenSaborApplication': 'com.entidades.buenSabor.BuenSaborApplication'
+	}
+}
 
 tasks.jar {
 	enabled = true
 }
 
 bootJar {
-	enabled = true
+	enabled=true
 }
