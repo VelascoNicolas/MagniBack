@@ -443,7 +443,7 @@ public class BuensaborunoApplication {private static final Logger logger = Logge
 			imagenEmpleadoRepository.save(imagenEmpleado);
 			Domicilio domicilioCliente = Domicilio.builder().cp(5519).calle("Cangallo").numero(800).piso(0).nroDpto(1).localidad(localidad1).build();
 			domicilioRepository.save(domicilioCliente);
-			UsuarioCliente usuarioCliente = UsuarioCliente.builder().userName("sebastian").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc4a3").build();
+			UsuarioCliente usuarioCliente = UsuarioCliente.builder().userName("sebastian").password("9565a49d-ecc1-4f4e-adea-6cdcb7edc4a3").build();
 			usuarioClienteRepository.save(usuarioCliente);
 			UsuarioEmpleado usuarioEmpleado = UsuarioEmpleado.builder().userName("martin").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc43a").build();
 			usuarioEmpleadoRepository.save(usuarioEmpleado);
