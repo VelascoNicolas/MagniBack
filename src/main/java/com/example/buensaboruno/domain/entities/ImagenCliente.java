@@ -9,6 +9,6 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class ImagenPersona extends Base{
+public class ImagenCliente extends Base{
     private String url;
 }

@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 //@Audited
 public class Factura extends Base{
-    private LocalDate fechaFcturacion;
+    private LocalDate fechaFacturacion;
     private Integer mpPaymentId;
     private Integer mpMerchantOrderId;
     private String mpPreferenceId;

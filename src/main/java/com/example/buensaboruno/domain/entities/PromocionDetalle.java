@@ -1,6 +1,7 @@
 package com.example.buensaboruno.domain.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
@@ -12,5 +13,8 @@ import org.hibernate.envers.Audited;
 @Builder
 //@Audited
 public class PromocionDetalle extends Base{
-    private String detalle;
+    private int cantidad;
+
+    @ManyToOne
+    private Articulo articulo;
 }

@@ -17,22 +17,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 
 
 @SpringBootApplication
-public class BuensaborunoApplication {
-	private static final Logger logger = LoggerFactory.getLogger(BuensaborunoApplication.class);
+public class BuensaborunoApplication {private static final Logger logger = LoggerFactory.getLogger(BuensaborunoApplication.class);
 
 	@Autowired
 	private ClienteRepository clienteRepository;
 	@Autowired
-	private ImagenPersonaRepository imagenPersonaRepository;
+	private ImagenClienteRepository imagenPersonaRepository;
 	@Autowired
 	private PromocionDetalleRepository promocionDetalleRepository;
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioEmpleadoRepository usuarioEmpleadoRepository;
+
+	@Autowired
+	private UsuarioClienteRepository usuarioClienteRepository;
 
 	@Autowired
 	private PaisRepository paisRepository;
@@ -54,6 +55,9 @@ public class BuensaborunoApplication {
 
 	@Autowired
 	private UnidadMedidaRepository unidadMedidaRepository;
+
+	@Autowired
+	private DetallePedidoRepository detallePedidoRepository;
 
 	@Autowired
 	private CategoriaRepository categoriaRepository;
@@ -84,9 +88,12 @@ public class BuensaborunoApplication {
 	@Bean
 	@Transactional
 	CommandLineRunner init(ClienteRepository clienteRepository,
-						   ImagenPersonaRepository imagenPersonaRepository,
+						   ImagenClienteRepository imagenClienteRepository,
+						   ImagenPromocionRepository imagenPromocionRepository,
+						   ImagenEmpleadoRepository imagenEmpleadoRepository,
 						   PromocionDetalleRepository promocionDetalleRepository,
-						   UsuarioRepository usuarioRepository,
+						   UsuarioClienteRepository usuarioClienteRepository,
+						   UsuarioEmpleadoRepository usuarioEmpleaoRepository,
 						   PaisRepository paisRepository,
 						   ProvinciaRepository provinciaRepository,
 						   LocalidadRepository localidadRepository,
@@ -100,7 +107,7 @@ public class BuensaborunoApplication {
 						   ImagenArticuloRepository imagenArticuloRepository,
 						   PromocionRepository promocionRepository,
 						   PedidoRepository pedidoRepository,
-							EmpleadoRepository empleadoRepository, FacturaRepository facturaRepository) {
+						   EmpleadoRepository empleadoRepository, FacturaRepository facturaRepository) {
 		return args -> {
 			logger.info("----------------ESTOY----FUNCIONANDO---------------------");
 			// Etapa del dashboard
@@ -187,14 +194,14 @@ public class BuensaborunoApplication {
 			Categoria categoriaInsumos = Categoria.builder().denominacion("Insumos").
 					build();
 
-	// Grabo la categoría de insumos y de Manufacturados
+			// Grabo la categoría de insumos y de Manufacturados
 			categoriaRepository.save(categoriaPizzas);
 			categoriaRepository.save(categoriaInsumos);
-	// Asigno subCategorías
+			// Asigno subCategorías
 
 			categoriaBebidas.getSubCategorias().add(categoriaGaseosas);
 			categoriaBebidas.getSubCategorias().add(categoriaTragos);
-		// Grabo las Subcategorías
+			// Grabo las Subcategorías
 			categoriaRepository.save(categoriaBebidas);
 
 			logger.info("---------------voy a asignar a Guaymallen--------------------");
@@ -264,17 +271,14 @@ public class BuensaborunoApplication {
 			ImagenArticulo imagenArticuloHarina = ImagenArticulo.builder().url("https://mandolina.co/wp-content/uploads/2023/03/648366622-1024x683.jpg").build();
 			ImagenArticulo imagenArticuloQueso = ImagenArticulo.builder().url("https://superdepaso.com.ar/wp-content/uploads/2021/06/SANTAROSA-PATEGRAS-04.jpg").build();
 			ImagenArticulo imagenArticuloTomate = ImagenArticulo.builder().url("https://thefoodtech.com/wp-content/uploads/2020/06/Componentes-de-calidad-en-el-tomate-828x548.jpg").build();
-			imagenArticuloRepository.save(imagenArticuloCoca);
-			imagenArticuloRepository.save(imagenArticuloHarina);
-			imagenArticuloRepository.save(imagenArticuloQueso);
-			imagenArticuloRepository.save(imagenArticuloTomate);
+
 
 			//ASOCIAMOS IMAGEN CON INSUMOS
 			cocaCola.getImagenes().add(imagenArticuloCoca);
 			harina.getImagenes().add(imagenArticuloHarina);
 			queso.getImagenes().add(imagenArticuloQueso);
 			tomate.getImagenes().add(imagenArticuloTomate);
-		// Grabamos los Articulos
+			// Grabamos los Articulos
 			articuloInsumoRepository.save(cocaCola);
 			articuloInsumoRepository.save(harina);
 			articuloInsumoRepository.save(queso);
@@ -282,10 +286,10 @@ public class BuensaborunoApplication {
 
 
 			//ASOCIAMOS CATEGORIA CON INSUMOS
-			categoriaInsumos.getArticulos().add(harina);
-			categoriaInsumos.getArticulos().add(queso);
-			categoriaInsumos.getArticulos().add(tomate);
-			categoriaGaseosas.getArticulos().add(cocaCola);
+			categoriaInsumos.addBoth(harina);
+			categoriaInsumos.addBoth(queso);
+			categoriaInsumos.addBoth(tomate);
+			categoriaGaseosas.addBoth(cocaCola);
 			categoriaRepository.save(categoriaInsumos);
 			categoriaRepository.save(categoriaGaseosas);
 
@@ -298,15 +302,13 @@ public class BuensaborunoApplication {
 					tiempoEstimadoMinutos(15).
 					preparacion("Pasos de preparacion de una muzza de toda la vida").
 					build();
-			ArticuloManufacturado pizzaNapolitana = ArticuloManufacturado.builder().denominacion("Pizza Muzarella").descripcion("Una pizza clasica").unidadMedida(unidadMedidaPorciones).precioVenta(150.0).tiempoEstimadoMinutos(15).preparacion("Pasos de preparacion de una pizza napolitana italiana").build();
+			ArticuloManufacturado pizzaNapolitana = ArticuloManufacturado.builder().denominacion("Pizza Napolitana").descripcion("Una pizza clasica").unidadMedida(unidadMedidaPorciones).precioVenta(150.0).tiempoEstimadoMinutos(15).preparacion("Pasos de preparacion de una pizza napolitana italiana").build();
 
 			// Crear fotos para los artículos manufacturados
 			ImagenArticulo imagenArticuloPizzaMuzarella = ImagenArticulo.builder().
 					url("https://storage.googleapis.com/fitia-api-bucket/media/images/recipe_images/1002846.jpg").
 					build();
 			ImagenArticulo imagenArticuloPizzaNapolitana = ImagenArticulo.builder().url("https://assets.elgourmet.com/wp-content/uploads/2023/03/8metlvp345_portada-pizza-1024x686.jpg.webp").build();
-			imagenArticuloRepository.save(imagenArticuloPizzaMuzarella);
-			imagenArticuloRepository.save(imagenArticuloPizzaNapolitana);
 
 			//ASOCIAMOS IMAGEN CON ARTICULO MANUFACTURADO
 			pizzaMuzarella.getImagenes().add(imagenArticuloPizzaMuzarella);
@@ -314,7 +316,7 @@ public class BuensaborunoApplication {
 			articuloManufacturadoRepository.save(pizzaMuzarella);
 			articuloManufacturadoRepository.save(pizzaNapolitana);
 
-			// Establecer las relaciones entre estos objetos. Art+iculos de la Receta independiente
+			// Establecer las relaciones entre estos objetos Articulos de la Receta independiente
 			ArticuloManufacturadoDetalle detalle1 = ArticuloManufacturadoDetalle.builder().
 					articuloInsumo(harina).
 					cantidad(300).
@@ -323,7 +325,7 @@ public class BuensaborunoApplication {
 			ArticuloManufacturadoDetalle detalle3 = ArticuloManufacturadoDetalle.builder().articuloInsumo(harina).cantidad(350).build();
 			ArticuloManufacturadoDetalle detalle4 = ArticuloManufacturadoDetalle.builder().articuloInsumo(queso).cantidad(650).build();
 			ArticuloManufacturadoDetalle detalle5 = ArticuloManufacturadoDetalle.builder().articuloInsumo(tomate).cantidad(2).build();
-	// grabamos el Artículo Manufacturado
+			// grabamos el Artículo Manufacturado
 			articuloManufacturadoDetalleRepository.save(detalle1);
 			articuloManufacturadoDetalleRepository.save(detalle2);
 			articuloManufacturadoDetalleRepository.save(detalle3);
@@ -343,12 +345,13 @@ public class BuensaborunoApplication {
 
 			// Establecer relaciones de las categorias - Cada Producto Manufacturado Pertenece a una categoria
 
-			categoriaPizzas.getArticulos().add(pizzaMuzarella);
-			categoriaPizzas.getArticulos().add(pizzaNapolitana);
-        // Graba la categoria y los productos asociados
+			categoriaPizzas.addBoth(pizzaMuzarella);
+			categoriaPizzas.addBoth(pizzaNapolitana);
+			// Graba la categoria y los productos asociados
 			categoriaRepository.save(categoriaPizzas);
 
-		//	categoriaRepository.save(categoriaGaseosas); CREO QUE ESTA DE MAS REVISAR
+			//	categoriaRepository.save(categoriaGaseosas); CREO QUE ESTA DE MAS REVISAR
+
 
 
 			// Crear promocion para sucursal - Dia de los enamorados
@@ -363,8 +366,15 @@ public class BuensaborunoApplication {
 					.tipoPromocion(TipoPromocion.PROMOCION)
 					.build();
 			// Agregamos los Manufacturados y alguna bebida que figura como insumo
-			promocionDiaEnamorados.getArticulos().add(cocaCola);
-			promocionDiaEnamorados.getArticulos().add(pizzaNapolitana);
+			PromocionDetalle detallePromo1=PromocionDetalle.builder().cantidad(2).articulo(pizzaNapolitana).build();
+
+			PromocionDetalle detallePromo2=PromocionDetalle.builder().cantidad(1).articulo(cocaCola).build();
+
+
+
+
+			promocionDiaEnamorados.getPromocionDetalles().add(detallePromo1);
+			promocionDiaEnamorados.getPromocionDetalles().add(detallePromo2);
 
 			promocionRepository.save(promocionDiaEnamorados);
 
@@ -378,8 +388,11 @@ public class BuensaborunoApplication {
 					.tipoPromocion(TipoPromocion.PROMOCION)
 					.build();
 			// Agregamos los Manufacturados y alguna bebida que figura como insumo
-			promocionDiaEnamorados.getArticulos().add(cocaCola);
-			promocionDiaEnamorados.getArticulos().add(pizzaMuzarella);
+			PromocionDetalle detallePromo3=PromocionDetalle.builder().cantidad(1).articulo(pizzaNapolitana).build();
+
+			PromocionDetalle detallePromo4=PromocionDetalle.builder().cantidad(2).articulo(cocaCola).build();
+			promocionDiaEnamorados.getPromocionDetalles().add(detallePromo3);
+			promocionDiaEnamorados.getPromocionDetalles().add(detallePromo4);
 
 			promocionRepository.save(pizzaConCoca);
 
@@ -388,10 +401,10 @@ public class BuensaborunoApplication {
 // La sucursal buscada, luego debe salvarse nuevamente, pero ahora ya existe es como un Updete
 // Peimero la busco y luego la grabo
 
-		//sucursalRepository.findById();
+			//sucursalRepository.findById();
 //--------------------- ESTOS SAVE SE HACIAN NUEVAMENTE CON LA INSTANCIA ANTERIOR
-//  Por eso daba duplicado, revisa rla logica de esta parte
-		// Sucursal Guaymallee
+//  Por eso daba duplicado, revisar la logica de esta parte
+			// Sucursal Guaymallee
 			Sucursal sucursalId1 = sucursalRepository.findWithPromocionesById(1L);
 			Sucursal sucursalId2 = sucursalRepository.findWithPromocionesById(2L);
 			Promocion promocionId1 = promocionRepository.findAllWithSucursales(1L);
@@ -424,40 +437,43 @@ public class BuensaborunoApplication {
 //			sucursalRepository.guardarSucursalConValidacion(sucursalMarDelPlata);
 
 			//Crea un cliente y un usuario
-			ImagenPersona imagenCliente = ImagenPersona.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
-			imagenPersonaRepository.save(imagenCliente);
-			ImagenPersona imagenEmpleado = ImagenPersona.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
-			imagenPersonaRepository.save(imagenEmpleado);
+			ImagenCliente imagenCliente = ImagenCliente.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
+			imagenClienteRepository.save(imagenCliente);
+			ImagenEmpleado imagenEmpleado = ImagenEmpleado.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
+			imagenEmpleadoRepository.save(imagenEmpleado);
 			Domicilio domicilioCliente = Domicilio.builder().cp(5519).calle("Cangallo").numero(800).piso(0).nroDpto(1).localidad(localidad1).build();
 			domicilioRepository.save(domicilioCliente);
-			Usuario usuario = Usuario.builder().userName("sebastian").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc4a3").build();
-			usuarioRepository.save(usuario);
-			Usuario usuario2 = Usuario.builder().userName("martin").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc43a").build();
-			usuarioRepository.save(usuario2);
+			UsuarioCliente usuarioCliente = UsuarioCliente.builder().userName("sebastian").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc4a3").build();
+			usuarioClienteRepository.save(usuarioCliente);
+			UsuarioEmpleado usuarioEmpleado = UsuarioEmpleado.builder().userName("martin").auth0Id("9565a49d-ecc1-4f4e-adea-6cdcb7edc43a").build();
+			usuarioEmpleadoRepository.save(usuarioEmpleado);
 
 			Cliente cliente = new Cliente();
 
-			cliente.setImagenPersona(imagenCliente);
+			cliente.setImagenCliente(imagenCliente);
 			cliente.setEmail("correoFalso@gmail.com");
 			cliente.setNombre("Sebastian");
 			cliente.setApellido("Wilder");
-			cliente.setUsuario(usuario);
+			cliente.setUsuario(usuarioCliente);
 			cliente.setTelefono("2615920825");
-		//	cliente.setEstaActivo(true);
+			//	cliente.setEstaActivo(true);
 			cliente.getDomicilios().add(domicilioCliente);
 			clienteRepository.save(cliente);
 
 			Empleado empleado=new Empleado();
+			LocalDate date = LocalDate.of(1996,06,30);
 
 			empleado.setEmail("correoFalso@hotmail.com");
 			empleado.setTipoEmpleado(Rol.CAJERO);
 			empleado.setNombre("CorreoFalso");
 			empleado.setApellido("Falsin");
-			empleado.setUsuario(usuario2);
+			empleado.setUsuarioEmpleado(usuarioEmpleado);
 			empleado.setTelefono("2612151170");
-		//	empleado.setEstaActivo(true);
-			empleado.setImagenPersona(imagenEmpleado);
+			empleado.setFechaNacimiento(date);
+			//	empleado.setEstaActivo(true);
+			empleado.setImagenEmpleado(imagenEmpleado);
 			empleado.setSucursal(sucursalGuaymallen);
+			empleado.setTipoEmpleado(Rol.ADMIN);
 			sucursalGuaymallen.getEmpleados().add(empleado);
 			empleadoRepository.save(empleado);
 			logger.info("Empleado{}:",empleado);
@@ -475,8 +491,10 @@ public class BuensaborunoApplication {
 					.domicilio(domicilioCliente)
 					.build();
 
-			DetallePedido detallePedido1 = DetallePedido.builder().articulo(pizzaMuzarella).cantidad(1).subTotal(200.0).build();
-			DetallePedido detallePedido2 = DetallePedido.builder().articulo(cocaCola).cantidad(2).subTotal(100.0).build();
+			DetallePedido detallePedido1 = DetallePedido.builder().articulo(pizzaMuzarella).cantidad(1).build();
+			DetallePedido detallePedido2 = DetallePedido.builder().articulo(cocaCola).cantidad(2).build();
+
+
 
 			pedido.getDetallePedidos().add(detallePedido1);
 			pedido.getDetallePedidos().add(detallePedido2);
@@ -485,18 +503,22 @@ public class BuensaborunoApplication {
 			pedidoRepository.save(pedido);
 
 			Random random = new Random();
-			Factura facturaBuilder = Factura.builder().fechaFcturacion(LocalDate.now())
-			.mpPaymentId(random.nextInt(1000))  // Se asume un rango máximo de 1000
-			.mpMerchantOrderId(random.nextInt(1000)) // Se asume un rango máximo de 1000
-			.mpPreferenceId("MP-" + random.nextInt(10000))  // Se asume un rango máximo de 10000
-			.mpPaymentType("Tipo" + random.nextInt(10)) // Se asume un rango máximo de 10
-			.formaPago(FormaPago.EFECTIVO)
-			.totalVenta(random.nextDouble() * 1000).build();
+			Factura facturaBuilder = Factura.builder().fechaFacturacion(LocalDate.now())
+					.mpPaymentId(random.nextInt(1000))  // Se asume un rango máximo de 1000
+					.mpMerchantOrderId(random.nextInt(1000)) // Se asume un rango máximo de 1000
+					.mpPreferenceId("MP-" + random.nextInt(10000))  // Se asume un rango máximo de 10000
+					.mpPaymentType("Tipo" + random.nextInt(10)) // Se asume un rango máximo de 10
+					.formaPago(FormaPago.EFECTIVO)
+					.totalVenta(random.nextDouble() * 1000).build();
 
 			facturaRepository.save(facturaBuilder);
 
 			pedido.setFactura(facturaBuilder);
 
+			pedidoRepository.save(pedido);
+
+			pedido.calcularPrecioVentaTotal(0.0);
+			pedido.calcularPrecioCostoTotal();
 			pedidoRepository.save(pedido);
 
 

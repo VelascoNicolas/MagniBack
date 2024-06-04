@@ -6,6 +6,7 @@ import com.example.buensaboruno.domain.enums.TipoEnvio;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.aspectj.weaver.ast.Instanceof;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
@@ -37,7 +38,7 @@ public class Pedido extends Base{
     @ManyToOne
     private Sucursal sucursal;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Factura factura;
 
     @ManyToOne
@@ -55,4 +56,39 @@ public class Pedido extends Base{
     @ManyToOne
     @JoinColumn(name = "empleado_id")
     private Empleado empleado;
+
+    public void calcularPrecioVentaTotal(Double precioDelivery) {
+        Double precioVenta = 0.0;
+        for (DetallePedido detallePedido : detallePedidos) {
+            precioVenta += detallePedido.calcularSubTotal();
+        }
+        this.setTotal(precioVenta + precioDelivery);
+        this.getFactura().setTotalVenta(precioVenta + precioDelivery);
+    }
+
+    public void calcularPrecioCostoTotal() {
+        Double precioCosto = 0.0;
+        for (DetallePedido detallePedido : detallePedidos) {
+            if (detallePedido.getArticulo() instanceof ArticuloInsumo) {
+                precioCosto += ((ArticuloInsumo) detallePedido.getArticulo()).getPrecioCompra() * detallePedido.getCantidad();
+            } else if (detallePedido.getArticulo() instanceof ArticuloManufacturado) {
+                for (ArticuloManufacturadoDetalle am : ((ArticuloManufacturado) detallePedido.getArticulo()).getArticuloManufacturadoDetalles()) {
+                    precioCosto += am.getArticuloInsumo().getPrecioCompra() * am.getCantidad() * detallePedido.getCantidad();
+                }
+            }
+            if (detallePedido.getPromocion() != null) {
+                for (PromocionDetalle promocionDetalle : detallePedido.getPromocion().getPromocionDetalles()) {
+                    if (promocionDetalle.getArticulo() instanceof ArticuloInsumo) {
+                        precioCosto += ((ArticuloInsumo) promocionDetalle.getArticulo()).getPrecioCompra() * promocionDetalle.getCantidad() * detallePedido.getCantidad();
+                    } else if (promocionDetalle.getArticulo() instanceof ArticuloManufacturado) {
+                        for (ArticuloManufacturadoDetalle am : ((ArticuloManufacturado) promocionDetalle.getArticulo()).getArticuloManufacturadoDetalles()) {
+                            precioCosto += am.getArticuloInsumo().getPrecioCompra() * am.getCantidad() * detallePedido.getCantidad();
+                        }
+                    }
+                }
+            }
+
+        }
+        this.setTotalCosto(precioCosto);
+    }
 }

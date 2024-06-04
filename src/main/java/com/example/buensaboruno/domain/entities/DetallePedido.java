@@ -20,4 +20,18 @@ public class DetallePedido extends Base{
     @ManyToOne
     private Articulo articulo;
 
+    @ManyToOne
+    private Promocion promocion;
+
+    public Double calcularSubTotal() {
+        Double subtotal = 0.0;
+        if (this.getArticulo() instanceof ArticuloInsumo) {
+            subtotal = this.getCantidad() * ((ArticuloInsumo) this.getArticulo()).getPrecioVenta();
+        } else if (this.getArticulo() instanceof ArticuloManufacturado) {
+            subtotal = this.getCantidad() * ((ArticuloManufacturado) this.getArticulo()).getPrecioVenta();
+        }
+        this.setSubTotal(subtotal);
+        return subtotal;
+    }
+
 }
