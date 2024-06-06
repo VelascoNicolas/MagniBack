@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface ClienteRepository extends BaseRepository<Cliente,Long> {
     @Query(value = "SELECT * FROM CLIENTE WHERE USUARIO_ID = :id", nativeQuery = true)
     public Cliente getCliente(@Param("id") Long id);
+
 }

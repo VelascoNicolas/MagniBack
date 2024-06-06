@@ -438,7 +438,6 @@ public class BuensaborunoApplication {private static final Logger logger = Logge
 
 			//Crea un cliente y un usuario
 			ImagenCliente imagenCliente = ImagenCliente.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
-			imagenClienteRepository.save(imagenCliente);
 			ImagenEmpleado imagenEmpleado = ImagenEmpleado.builder().url("https://hips.hearstapps.com/hmg-prod/images/la-la-land-final-1638446140.jpg").build();
 			imagenEmpleadoRepository.save(imagenEmpleado);
 			Domicilio domicilioCliente = Domicilio.builder().cp(5519).calle("Cangallo").numero(800).piso(0).nroDpto(1).localidad(localidad1).build();
@@ -456,7 +455,6 @@ public class BuensaborunoApplication {private static final Logger logger = Logge
 			cliente.setApellido("Wilder");
 			cliente.setUsuario(usuarioCliente);
 			cliente.setTelefono("2615920825");
-			//	cliente.setEstaActivo(true);
 			cliente.getDomicilios().add(domicilioCliente);
 			clienteRepository.save(cliente);
 
