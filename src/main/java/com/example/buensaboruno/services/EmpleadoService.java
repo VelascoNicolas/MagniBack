@@ -7,4 +7,5 @@ import java.util.List;
 public interface EmpleadoService {
     public List<Empleado> getTodos();
     public Empleado getByID(Long id);
+    public Empleado getByActivo();
 }

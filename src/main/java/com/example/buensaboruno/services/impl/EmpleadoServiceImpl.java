@@ -23,4 +23,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public Empleado getByID(Long id) {
         return empleadoRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public Empleado getByActivo() {
+        return empleadoRepository.findByActivo();
+    }
 }

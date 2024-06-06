@@ -17,7 +17,7 @@ public class UsuarioClienteController {
     private UsuarioClienteService usuarioClienteService;
 
     @GetMapping("/{userName}")
-    public ResponseEntity<?> getUsuarioById(@PathVariable String userName) {
+    public ResponseEntity<?> getUsuarioByUserName(@PathVariable String userName) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioClienteService.existeUsuario(userName));
     }
 
@@ -34,5 +34,10 @@ public class UsuarioClienteController {
     @PutMapping("/{userName}")
     public ResponseEntity<?> updateUsuario(@RequestBody UsuarioCliente usuario, @PathVariable String userName) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioClienteService.update(usuario, userName));
+    }
+
+    @GetMapping("/cliente")
+    public ResponseEntity<?> getUsuarioByUserNameAndPassword(@RequestBody UsuarioCliente usuario) {
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioClienteService.login(usuario));
     }
 }

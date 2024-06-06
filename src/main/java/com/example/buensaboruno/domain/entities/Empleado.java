@@ -18,6 +18,7 @@ import java.util.Set;
 @Builder
 //@Audited
 public class Empleado extends Base{
+    private boolean activo;
     private Rol tipoEmpleado;
     private String nombre;
     private String apellido;

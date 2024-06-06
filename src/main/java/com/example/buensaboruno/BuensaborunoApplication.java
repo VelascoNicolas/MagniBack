@@ -463,6 +463,7 @@ public class BuensaborunoApplication {private static final Logger logger = Logge
 			Empleado empleado=new Empleado();
 			LocalDate date = LocalDate.of(1996,06,30);
 
+			empleado.setActivo(true);
 			empleado.setEmail("correoFalso@hotmail.com");
 			empleado.setTipoEmpleado(Rol.CAJERO);
 			empleado.setNombre("CorreoFalso");

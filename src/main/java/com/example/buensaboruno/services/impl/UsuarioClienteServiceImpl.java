@@ -1,6 +1,8 @@
 package com.example.buensaboruno.services.impl;
 
+import com.example.buensaboruno.domain.entities.Cliente;
 import com.example.buensaboruno.domain.entities.UsuarioCliente;
+import com.example.buensaboruno.repositories.ClienteRepository;
 import com.example.buensaboruno.repositories.UsuarioClienteRepository;
 import com.example.buensaboruno.services.UsuarioClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ public class UsuarioClienteServiceImpl implements UsuarioClienteService {
 
     @Autowired
     private UsuarioClienteRepository usuarioClienteRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Override
     public boolean existeUsuario(String usuario) {
@@ -38,6 +43,16 @@ public class UsuarioClienteServiceImpl implements UsuarioClienteService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         userChange.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioClienteRepository.save(userChange);
+    }
+
+    @Override
+    public Cliente login(UsuarioCliente usuario) {
+        if (this.passwordCheck(usuario)) {
+            Long id = usuarioClienteRepository.verifyId(usuario.getUserName());
+            return clienteRepository.getCliente(id);
+        } else {
+            return null;
+        }
     }
 
     @Override

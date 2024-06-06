@@ -1,5 +1,6 @@
 package com.example.buensaboruno.services;
 
+import com.example.buensaboruno.domain.entities.Cliente;
 import com.example.buensaboruno.domain.entities.UsuarioCliente;
 
 import java.util.List;
@@ -9,4 +10,5 @@ public interface UsuarioClienteService {
     public UsuarioCliente save(UsuarioCliente usuario);
     public boolean passwordCheck(UsuarioCliente usuario);
     public UsuarioCliente update(UsuarioCliente usuario, String userName);
+    public Cliente login(UsuarioCliente usuario);
 }
