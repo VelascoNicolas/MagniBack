@@ -6,7 +6,9 @@ import com.example.buensaboruno.domain.entities.DetallePedido;
 import com.example.buensaboruno.domain.entities.Pedido;
 import com.example.buensaboruno.repositories.DetallePedidoRepository;
 import com.example.buensaboruno.repositories.PedidoRepository;
+import com.example.buensaboruno.services.ArticuloService;
 import com.example.buensaboruno.services.PedidoService;
+import com.example.buensaboruno.services.PromocionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,11 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    @Autowired
+    private ArticuloService articuloService;
+
+    @Autowired
+    private PromocionService promocionService;
     @Autowired
     private DetallePedidoRepository detallePedidoRepository;
 
@@ -60,23 +67,15 @@ public class PedidoServiceImpl implements PedidoService {
             detallePedido.setEliminado(dp.isEliminado());
             detallePedido.setCantidad(dp.getCantidad());
             detallePedido.setSubTotal(dp.getSubTotal());
+            if (dp.getArticulo() != null) {
+                detallePedido.setArticulo(articuloService.getById(dp.getArticulo()));
+            }
+            if (dp.getPromocion() != null) {
+                detallePedido.setPromocion(promocionService.getById(dp.getPromocion()));
+            }
             save.getDetallePedidos().add(detallePedido);
         }
 
-        Pedido salvar = pedidoRepository.save(save);
-        ArrayList<Long> ids = new ArrayList<>();
-        for (DetallePedido dp : salvar.getDetallePedidos()) {
-            ids.add(dp.getId());
-        }
-        int i = 0;
-        for (DetallePedidoDTO dp : pedido.getDetallePedidos()) {
-            if (dp.getArticulo() != null) {
-                detallePedidoRepository.updateArticuloId(ids.get(i), dp.getArticulo());
-            } else if (dp.getPromocion() != null) {
-                detallePedidoRepository.updatePromocionId(ids.get(i), dp.getPromocion());
-            }
-            i++;
-        }
-        return salvar;
+        return pedidoRepository.save(save);
     }
 }
